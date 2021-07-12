@@ -505,8 +505,12 @@ def create_from_images(tfrecord_dir, image_dir, shuffle):
     image_filenames = sorted(glob.glob(os.path.join(image_dir, '*')))
     if len(image_filenames) == 0:
         error('No input images found')
-
-    img = np.asarray(PIL.Image.open(image_filenames[0]))
+    img = Image.open(image_filenames[0])
+    img = img.convert("RGB")
+    img = img_to_array(img)
+    img = cv2.resize(img, dsize=(512,512), interpolation=cv2.INTER_CUBIC)
+    img = np.asarray(img)
+    print(img.shape)
     resolution = img.shape[0]
     channels = img.shape[2] if img.ndim == 3 else 1
     if img.shape[1] != resolution:
@@ -515,11 +519,16 @@ def create_from_images(tfrecord_dir, image_dir, shuffle):
         error('Input image resolution must be a power-of-two')
     if channels not in [1, 3]:
         error('Input images must be stored as RGB or grayscale')
-
+    print('here')
+    print(img.shape)
     with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
         order = tfr.choose_shuffled_order() if shuffle else np.arange(len(image_filenames))
         for idx in range(order.size):
-            img = np.asarray(PIL.Image.open(image_filenames[order[idx]]))
+            img = PIL.Image.open(image_filenames[order[idx]])
+            img = img.convert("RGB")
+            img = img_to_array(img)
+            img = cv2.resize(img, dsize=(512,512), interpolation=cv2.INTER_CUBIC)
+            img = np.asarray(img)
             if channels == 1:
                 img = img[np.newaxis, :, :] # HW => CHW
             else:
