@@ -500,15 +500,17 @@ def create_celeba(tfrecord_dir, celeba_dir, cx=89, cy=121):
 
 #----------------------------------------------------------------------------
 
-def create_from_images(tfrecord_dir, image_dir, shuffle):
+def create_from_images(tfrecord_dir, image_dir, shuffle, resize):
     print('Loading images from "%s"' % image_dir)
+    assert type(resize)==int
+    assert resize%2 ==0
     image_filenames = sorted(glob.glob(os.path.join(image_dir, '*')))
     if len(image_filenames) == 0:
         error('No input images found')
     img = Image.open(image_filenames[0])
     img = img.convert("RGB")
     img = img_to_array(img)
-    img = cv2.resize(img, dsize=(512,512), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, dsize=(resize,resize), interpolation=cv2.INTER_CUBIC)
     img = np.asarray(img)
     print(img.shape)
     resolution = img.shape[0]
@@ -527,7 +529,7 @@ def create_from_images(tfrecord_dir, image_dir, shuffle):
             img = PIL.Image.open(image_filenames[order[idx]])
             img = img.convert("RGB")
             img = img_to_array(img)
-            img = cv2.resize(img, dsize=(512,512), interpolation=cv2.INTER_CUBIC)
+            img = cv2.resize(img, dsize=(resize,resize), interpolation=cv2.INTER_CUBIC)
             img = np.asarray(img)
             if channels == 1:
                 img = img[np.newaxis, :, :] # HW => CHW
