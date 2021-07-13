@@ -1,6 +1,7 @@
 ## GANs for Twitch
 
 Developped by Defend Intelligence (Anis Ayari)
+
 StyleGan originally developped by NVIDIA and modified by Anis Ayari.
 
 ### Readme Style GAN by NVIDIA (original repo ![here](https://github.com/NVlabs/stylegan) : 
